@@ -1,0 +1,4 @@
+* About
+=org-tracktable= is an emacs package for tracking writing progress in org-files and putting the results in an org-table.
+
+More info will come.
