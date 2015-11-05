@@ -2,6 +2,9 @@
 =org-tracktable= is an emacs package for tracking writing progress in org-files and putting the results in an org-table.
 
 More info will come.
+* Install
+(add-to-list 'load-path "~/.emacs.d/lisp/org-tracktable")
+(load "org-tracktable.el")
 
 * The table
 #+NAME: tracktable
