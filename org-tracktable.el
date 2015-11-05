@@ -40,7 +40,7 @@
   "Report the number of words in the Org mode buffer or selected region."
   (interactive)
   (let ((wc (org-tt-word-count (point-min) (point-max)))
-        (wc-old (org-table-get-remote-range "stats" "@>$4" )))
+        (wc-old (org-table-get-remote-range "tracktable" "@>$4" )))
     (message (concat (format "%d" wc) " words total. "
                      (number-to-string (- wc (string-to-number wc-old))) " written today."))))
 
