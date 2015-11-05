@@ -44,6 +44,15 @@
     (message (concat (format "%d" wc) " words total. "
                      (number-to-string (- wc (string-to-number wc-old))) " written today."))))
 
+(defun org-tt-write ()
+  (interactive)
+  (let ((tabel "^#\\+NAME: tracktable"))
+    (goto-char (point-min))
+    (re-search-forward tabel nil t)
+    (goto-char (org-table-end))
+    (previous-line 2)
+    (org-table-goto-column 6)))
+
 (defun org-tt-current ()
   "Reports the number of words in the Org mode buffer."
   (interactive)
