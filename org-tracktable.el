@@ -4,6 +4,8 @@
 ;; E-mail: andreasrasholm@protonmail.com
 ;; Created: 2015-11-03
 
+;; test
+
 ;;; Commentary:
 
 ;; Inserts a table to track word count. With 'org-tt-status' you can get
