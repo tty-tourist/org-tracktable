@@ -22,55 +22,58 @@
 (eval-when-compile (require 'org)
                    (require 'cl))
 
-(defun org-wc-in-heading-line ()
-  "Is point in a line starting with `*'?"
-  (equal (char-after (point-at-bol)) ?*))
+(defun tracktable-exists-p ()
+  "Check if the line '#+NAME: tracktable' exists in buffer."
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward "^#\\+NAME: tracktable" nil t)))
 
-(defun org-tt-count (beg end)
-  "Report the number of words in the Org mode buffer or selected region."
-  (interactive
-   (if (use-region-p)
-       (list (region-beginning) (region-end))
-     (list (point-min) (point-max))))
-  (message (format "%d words in %s."
-                   (org-tt-word-count beg end)
-                   (if (use-region-p) "region" "buffer"))))
-
-(defun org-tt-status ()
-  "Report the number of words in the Org mode buffer or selected region."
-  (interactive)
+(defun org-tt-written-today ()
+  "Calculate words written today but substractin"
   (let ((wc (org-tt-word-count (point-min) (point-max)))
         (wc-old (org-table-get-remote-range "tracktable" "@>$4" )))
-    (message (concat (format "%d" wc) " words total. "
-                     (number-to-string (- wc (string-to-number wc-old))) " written today."))))
-
-(defun org-tt-write ()
-  (interactive)
-  (let ((tabel "^#\\+NAME: tracktable"))
-    (goto-char (point-min))
-    (re-search-forward tabel nil t)
-    (goto-char (org-table-end))
-    (previous-line 2)
-    (org-table-goto-column 6)))
+    (number-to-string (- wc (string-to-number wc-old)))))
 
 (defun org-tt-current ()
-  "Reports the number of words in the Org mode buffer."
+  "Reports words in buffer. This function is used in the table formula."
   (interactive)
    (let ((wc (org-tt-word-count (point-min) (point-max))))
      (format "%d" wc)))
 
-(defun org-tt-insert ()
-  "Inserts the number of words in the Org mode buffer or selected region."
+(defun org-tt-status (beg end)
+  "Report the number of words in the Org mode buffer or if active.
+If the table 'tracktable' exists, show words written today."
+  (interactive
+   (if (use-region-p)
+       (list (region-beginning) (region-end))
+     (list (point-min) (point-max))))
+  (message (format "%d words in %s. %s"
+                   (org-tt-word-count beg end)
+                   (if (use-region-p) "region" "buffer")
+                   (if (tracktable-exists-p)
+                       (concat (org-tt-written-today) " words written today.")
+                     ""))))
+
+(defun org-tt-write ()
+  "Go to the last line of the table 'tracktable'."
   (interactive)
-   (let ((wc (org-tt-word-count (point-min) (point-max))))
-     (insert (format "%d" wc))))
+  (if (tracktable-exists-p)
+      (let ((tabel "^#\\+NAME: tracktable"))
+        (goto-char (point-min))
+        (re-search-forward tabel nil t)
+        (show-subtree)
+        (goto-char (org-table-end))
+        (previous-line 2)
+        (org-table-goto-column 6))
+    (message "Tracktable doesn't exist")))
+  
+(defun org-wc-in-heading-line ()
+  "Is point in a line starting with `*'?"
+  (equal (char-after (point-at-bol)) ?*))
 
 (defun org-tt-word-count (beg end)
   "Report the number of words in the selected region.
-Ignores: heading lines,
-         blocks,
-         comments,
-         drawers.
+Ignores: heading lines, blocks, comments and drawers.
 LaTeX macros are counted as 1 word."
 
   (let ((wc 0)

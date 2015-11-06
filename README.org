@@ -2,20 +2,26 @@
 =org-tracktable= is an emacs package for tracking writing progress in org-files and putting the results in an org-table.
 
 More info will come.
-* Install
+* Installation
+Clone repo or download =org-tracktable.el= to an appropriate location. 
+
+Add location to path and load: 
+
 (add-to-list 'load-path "~/.emacs.d/lisp/org-tracktable")
 (load "org-tracktable.el")
 
 * The table
+#+BEGIN_SRC org
 #+NAME: tracktable
 |---+------------------+-----+-----+---------+---------|
 | ! | date             | beg | end | written | comment |
 |---+------------------+-----+-----+---------+---------|
-|   | <2015-11-01 Sun> |   0 | 312 |     312 |         |
-|   | <2015-11-02 Mon> | 312 | 644 |     332 |         |
-|   | <2015-11-03 Tue> | 644 | 710 |      66 |         |
-|   | <2015-11-04 Wed> | 710 | 815 |     105 |         |
-|   | <2015-11-05 Thu> | 815 | 900 |      85 |         |
+|   | [2015-11-01 Sun] |   0 | 312 |     312 |         |
+|   | [2015-11-02 Mon] | 312 | 644 |     332 |         |
+|   | [2015-11-03 Tue] | 644 | 710 |      66 |         |
+|   | [2015-11-04 Wed] | 710 | 815 |     105 |         |
+|   | [2015-11-05 Thu] | 815 | 900 |      85 |         |
 |---+------------------+-----+-----+---------+---------|
-#+TBLFM: $2='(org-insert-time-stamp (current-time))::@2$3=0::$3=(@-1$4)::$4='(org-tt-current)::$5=$4-$3
+#+TBLFM: $2='(org-insert-time-stamp (current-time) nil t)::@2$3=0::$3=(@-1$4)::$4='(org-tt-current)::$5=$4-$3
 
+#+END_SRC
