@@ -22,11 +22,19 @@
 (eval-when-compile (require 'org)
                    (require 'cl))
 
+(load "org-table.el") ; Some additional functions from this package is used.
+
 (defun tracktable-exists-p ()
   "Check if the line '#+NAME: tracktable' exists in buffer."
   (save-excursion
     (goto-char (point-min))
     (re-search-forward "^#\\+NAME: tracktable" nil t)))
+
+(defun last-entry-today-p ()
+  "Check if the last entry in the tracktable was made today."
+  (let ((last-entry (format-time-string "%F" (org-read-date nil t (substring-no-properties (org-table-get-remote-range "tracktable" "@>$2") nil))))        
+        (today (format-time-string "%F" (time-subtract (current-time) (seconds-to-time 14400)))))
+  (string= last-entry today)))
 
 (defun org-tt-written-today ()
   "Calculate words written today but substractin"
@@ -34,11 +42,16 @@
         (wc-old (org-table-get-remote-range "tracktable" "@>$4" )))
     (number-to-string (- wc (string-to-number wc-old)))))
 
-(defun org-tt-current ()
+(defun org-tt-current-count ()
   "Reports words in buffer. This function is used in the table formula."
   (interactive)
    (let ((wc (org-tt-word-count (point-min) (point-max))))
      (format "%d" wc)))
+
+(defun org-tt-stamp ()
+    "Makes a timestamp for today minus 4 hours.
+This function is used in the table formula."
+  (org-insert-time-stamp (time-subtract (current-time) (seconds-to-time 14400)) nil t))
 
 (defun org-tt-status (beg end)
   "Report the number of words in the Org mode buffer or if active.
@@ -54,7 +67,7 @@ If the table 'tracktable' exists, show words written today."
                        (concat (org-tt-written-today) " words written today.")
                      ""))))
 
-(defun org-tt-write ()
+(defun org-tt-goto-table ()
   "Go to the last line of the table 'tracktable'."
   (interactive)
   (if (tracktable-exists-p)
@@ -64,12 +77,29 @@ If the table 'tracktable' exists, show words written today."
         (show-subtree)
         (goto-char (org-table-end))
         (previous-line 2)
-        (org-table-goto-column 6))
-    (message "Tracktable doesn't exist")))
-  
-(defun org-wc-in-heading-line ()
-  "Is point in a line starting with `*'?"
-  (equal (char-after (point-at-bol)) ?*))
+        (org-table-goto-column 6)
+        (org-table-next-row))
+    (message "Tabel 'tracktable' racktable doesn't exist")))
+
+(defun org-tt-write ()
+  "Go to the last line of the table 'tracktable'."
+  (interactive)
+  (if (tracktable-exists-p)
+      (let ((tabel "^#\\+NAME: tracktable"))
+        (org-mark-ring-push)
+        (goto-char (point-min))
+        (re-search-forward tabel nil t)
+        (show-subtree)
+        (goto-char (org-table-end))
+        (previous-line 2)
+        (org-table-goto-column 6)
+        (if (last-entry-today-p)
+            (progn (org-table-recalculate)
+            (message "Last entry updated. Enter comment or C-c & to go back."))
+           (progn (org-table-next-row)
+           (org-table-recalculate)
+           (message "New entry recorded. Enter comment or C-c & to go back"))))
+    (message "Tabel 'tracktable' doesn't exist.")))
 
 (defun org-tt-word-count (beg end)
   "Report the number of words in the selected region.
@@ -85,7 +115,7 @@ LaTeX macros are counted as 1 word."
       (while (< (point) end)
         (cond
          ;; Ignore heading lines, and sections tagged 'nowc' or 'noexport'.
-         ((org-wc-in-heading-line)
+         ((org-at-heading-p) ; org-wc-in-heading-line
           (let ((tags (org-get-tags-at)))
             (if (or (member "nowc" tags)
                     (member "noexport" tags))
