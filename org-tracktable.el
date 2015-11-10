@@ -32,7 +32,7 @@
 
 (defun last-entry-today-p ()
   "Check if the last entry in the tracktable was made today."
-  (let ((last-entry (format-time-string "%F" (org-read-date nil t (substring-no-properties (org-table-get-remote-range "tracktable" "@>$2") nil))))        
+  (let ((last-entry (substring-no-properties (org-table-get-remote-range "tracktable" "@>$2") 1 11))
         (today (format-time-string "%F" (time-subtract (current-time) (seconds-to-time 14400)))))
   (string= last-entry today)))
 
@@ -44,7 +44,6 @@
 
 (defun org-tt-current-count ()
   "Reports words in buffer. This function is used in the table formula."
-  (interactive)
    (let ((wc (org-tt-word-count (point-min) (point-max))))
      (format "%d" wc)))
 
