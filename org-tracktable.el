@@ -39,11 +39,11 @@
 ;; These three variables can be customized:
 
 ;; - 'org-tt-day-delay':
-;;    hours after midnight for new day to start.
+;;   hours after midnight for new day to start.
 ;; - 'org-tt-daily-goal':
-;;    The number of words you set out to write for the day.
+;;   The number of words you set out to write for the day.
 ;; - 'org-tt-table-name':
-;;    The name given to the table inserted by 'org-tt-insert.
+;;   The name given to the table inserted by 'org-tt-insert.
 
 
 ;; For additional info on use and customization, see the README in the
@@ -64,7 +64,7 @@
 (load "org-table.el") ; Functions from this package is are called.
 
 (defcustom org-tt-day-delay 5
-  "Hours after midnight that's be considered part of the previuos day. 
+  "Hours after midnight that are considered part of the previuos day. 
 Default is 5 which means that a new day is considered to start at 5am."
   :type 'integer)
 
@@ -78,7 +78,7 @@ disable 'org-tt-status' from displaying daily goal."
   "The name given to the table inserted by 'org-tt-insert'.
 This is the name that the other functions in the package tries refer to. 
 If you want to change this varianle it's recommendable to do it before 
-inserting the table to to ensure consistency. The default name is 
+inserting the table to ensure consistency. The default name is 
 'tracktable'."
   :type 'string)
 
@@ -130,22 +130,25 @@ This function is used in the table formula."
 (defun org-tt-insert-table ()
   "Inserts the tracktable."
   (interactive)
-  (unless (current-line-empty-p) (newline))
-  (insert (format "#+NAME: %s
+  (if (not (tracktable-exists-p))
+      (progn
+        (unless (current-line-empty-p) (newline))
+        (insert (format "#+NAME: %s
 |---+------+-----+-----+---------+---------|
 | ! | date | beg | end | written | comment |
 |---+------+-----+-----+---------+---------|
 |   |      |     |     |         |         |
 |---+------+-----+-----+---------+---------|
 #+TBLFM: @2$2=initial count::$2='(org-tt-stamp)::@2$3=0::$3=(@-1$4)::$4='(org-tt-current-count)::$5=$4-$3"
-                  org-tt-table-name))
-  (previous-line)
-  (org-table-previous-field)
-  (org-table-recalculate))
+                        org-tt-table-name))
+        (previous-line)
+        (org-table-previous-field)
+        (org-table-recalculate))
+    (message "Tabel '%s' already exist." org-tt-table-name)))
 
 ;;;###autoload
 (defun org-tt-status (beg end)
-  "Report the number of words in the Org mode buffer or if active.
+  "Report the number of words in the Org mode buffer or region if active.
 If the table 'tracktable' exists, show words written today."
   (interactive
    (if (use-region-p)
@@ -191,7 +194,7 @@ when you're done writing for the day."
 (defun org-tt-word-count (beg end)
   "Report the number of words in the selected region.
 Ignores: heading lines, comments and folded drawers,
-and any heading with the tag 'nowc' or 'noexport'
+and any heading with the tag 'nowc' or 'noexport.'
 LaTeX macros are counted as 1 word."
   (let ((wc 0)
         (latex-macro-regexp "\\\\[A-Za-z]+\\(\\[[^]]*\\]\\|\\){\\([^}]*\\)}"))
