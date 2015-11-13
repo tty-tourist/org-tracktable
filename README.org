@@ -5,7 +5,7 @@ It provides functions for inserting a table for tracking progress, updating that
 
 In the spirit of org-mode, the package aims to keep everything in plain view and in a single file.
 
-The package is useful when writing the first draft of something, not so much in the editing and rewriting phases where, alas, hard work seldom is reflected in the word count.
+The package is useful when writing the first draft of something, not so much in the editing and rewriting phases where, alas, hard work is seldom reflected in the word count.
 
 =org-tracktable= is inspired by [[https://github.com/dato/org-wc/blob/master/org-wc.el][org-wc.el]] and [[https://github.com/noctuid/chronicler][chronicler.el]].
 
@@ -41,17 +41,17 @@ This is the table inserted by =org-tt-insert-table=:
 
 #+BEGIN_SRC org
 #+NAME: tracktable
-|---+---------------+-----+-----+---------+---------|
-| ! | date          | beg | end | written | comment |
-|---+---------------+-----+-----+---------+---------|
-|   | initial count |   0 |   0 |       0 |         |
-|---+---------------+-----+-----+---------+---------|
+|---+---------------+-----+-----+-------+---------|
+| ! | date          | beg | end | total | comment |
+|---+---------------+-----+-----+-------+---------|
+|   | initial count |   0 |   0 |     0 |         |
+|---+---------------+-----+-----+-------+---------|
 #+TBLFM: @2$2=initial count::$2='(org-tt-stamp)::@2$3=0::$3=(@-1$4)::$4='(org-tt-current-count)::$5=$4-$3
 #+END_SRC
 
 Starting off, it will only have one line containing a count of the words already in the buffer. Everything is counted except: comments, (folded) drawers, heading lines, and any content of headings with the tags =nowc= or =noexport=.
 
-For that reason it's a good idea to put a =nowc= or =noexport= tag on any heading not containing whatever you consider productive writing, such as research and todo lists – and the heading containing the table itself, so the tracking of word counts won't influence the actual word count.
+For that reason it's a good idea to put a =nowc= or =noexport= tag on any heading not containing whatever you consider productive writing, such as research and todo lists – and the heading containing the table itself.
 
 The name of the table can be changed by customizing =org-tt-table-name=, for example:
 
@@ -66,8 +66,7 @@ All that the table needs to record the current word count with a time-stamp and 
 
 =org-tt-write= makes is easier to update the table. It will jump to the table from anywhere in the buffer, create a new entry and take you to the comment field. =C-c &= will take you back to your writing again.
 
-If an entry from the current day already exist, =org-tt-write= will update this entry instead of creating a new one. 
-In that way, =org-tracktable.el= aims to keep only one entry per day. For testing purposes, you can manually change the time-stamp for the last entry to get familiar with the behavior.
+If an entry from the current day already exist, =org-tt-write= will update this entry instead of creating a new one. In that way, =org-tracktable.el= is designed to only keep one entry per day. For testing purposes, you can manually change the time-stamp for the last entry a to insest new entries and get familiar with the behavior.
 
 Note that a new day is considered to start at 5am. This can be altered by changing the variable =org-tt-day-delay=.
 
@@ -76,4 +75,4 @@ Note that a new day is considered to start at 5am. This can be altered by changi
 
 - Number of words in the org buffer or region, if it's active.
 - The number of words written today (this is only shown if the table exist). This value is the difference between the last entry in the table and the total word count. Note that if the last entry is from the current day, =org-tt-status= will skip it and look at the second last. If  =org-tt-write= was called when you were done writing the preceding day, the count for the current day should be correct.
-- The percentage of your daily writing goal achieved so far. The daily writing goal is set to 300 by default. It can be altered by changing the variable =org-tt-daily-goal=. Set to 0 to disable 'org-tt-status' from displaying daily goal.
+- The percentage of your daily writing goal achieved so far. The daily writing goal is set to 300 words by default. It can be altered by changing the variable =org-tt-daily-goal=. Set this variable to 0 to disable 'org-tt-status' from displaying daily goal.
