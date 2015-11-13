@@ -1,47 +1,46 @@
 * About
 =org-tracktable= is an emacs/org-mode package for tracking your writing progress in an org-table.
 
-It provides functions for 1) inserting a table for tracking progress, 2) updating that table, and 2) getting status messages with your progress.
+It provides functions for inserting a table for tracking progress, updating that table, and getting status messages with your progress.
 
-In the spirit of org-mode, this package aims to keep everything in plain view – and in a single file.
+In the spirit of org-mode, the package aims to keep everything in plain view and in a single file.
 
-It's useful when writing the first draft of something, not so much in later phases of writing, as editing, alas, is likely to give you a negative word count that's disproportional with the work involved.
+The package is useful when writing the first draft of something, not so much in the editing and rewriting phases where, alas, hard work seldom is reflected in the word count.
 
-* Installation
-Clone this repo or download =org-tracktable.el= to an appropriate location, like =~/.emacs.d/lisp/=.
+=org-tracktable= is inspired by [[https://github.com/dato/org-wc/blob/master/org-wc.el][org-wc.el]] and [[https://github.com/noctuid/chronicler][chronicler.el]].
 
-Add the location to path and load it: 
+** Installation
+Clone this repo or download =org-tracktable.el= to an appropriate location like =~/.emacs.d/lisp/=.
+
+Add the location to emacs' path and load it: 
 
 #+BEGIN_SRC emacs-lisp
 (add-to-list 'load-path "~/.emacs.d/lisp/org-tracktable")
 (load "org-tracktable.el")
 #+END_SRC
 
-* Functions
-When =org-tracktable.el= is loaded these three functions should become available:
+** Functions
+When =org-tracktable.el= is loaded, these three functions become available:
 
-The package provides these three interactive functions:
+- =org-tt-insert-table=: inserts a table to keep track of word count in an org-mode buffer.
 
-- =org-tt-insert-table=: which inserts a table to keep track of word count in an org-mode buffer.
+- =org-tt-write=: adds an entry with the current word count to the table. You only need to do this when you're done writing for the day. If an entry for the current day already exists, this entry will be updated.
 
-- =org-tt-write=: which adds an entry with the current word count to the table. You only need to do this when you're done writing for the day. If an entry for the current day already exists, this entry will be updated.
+- =org-tt-status=: messages the total word count in the buffer, or region if active. If the table was inserted by =org-tt-insert-table=, the count of words written the current day is also shown together with percentage of your daily writing goal.
 
-- =org-tt-status=: which messages the total word count in the buffer, or region if active. If the table exists, the count of words written the current day is also shown together with percentage of your daily writing goal.
-
-* Keys
-
-It might be convenient to map =org-tt-write= and  =org-tt-status= to keys like:
+** Keys
+It can be convenient to map =org-tt-write= and  =org-tt-status= to whatever keys you can spare, for example:
 
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "<f11>") 'org-tt-status)
 (global-set-key (kbd "<f12>") 'org-tt-write)
 #+END_SRC
 
-* The table
-This is the table that's inserted by =org-tt-insert-table=:
+** The table
+This is the table inserted by =org-tt-insert-table=:
 
 #+BEGIN_SRC org
-#+NAME: tracktab3le
+#+NAME: tracktable
 |---+---------------+-----+-----+---------+---------|
 | ! | date          | beg | end | written | comment |
 |---+---------------+-----+-----+---------+---------|
@@ -50,48 +49,31 @@ This is the table that's inserted by =org-tt-insert-table=:
 #+TBLFM: @2$2=initial count::$2='(org-tt-stamp)::@2$3=0::$3=(@-1$4)::$4='(org-tt-current-count)::$5=$4-$3
 #+END_SRC
 
-Starting of, it will only have one line containing a count of the words already in the buffer. Everything is counted except: comments, (folded) drawers, heading lines, and any content of headings with the tags =nowc= or =noexport=.
+Starting off, it will only have one line containing a count of the words already in the buffer. Everything is counted except: comments, (folded) drawers, heading lines, and any content of headings with the tags =nowc= or =noexport=.
 
-For that reason it's a good idea to put a =nowc= or =noexport= on any heading not containing whatever you consider productive writing, like =* Research=, =* Crazy notes=, and the heading containing the table itself, so the recording of word counts won't influence the actual word count.
+For that reason it's a good idea to put a =nowc= or =noexport= tag on any heading not containing whatever you consider productive writing, such as research and todo lists – and the heading containing the table itself, so the tracking of word counts won't influence the actual word count.
 
-The name of the table can be change by customizing =org-tt-table-name=, for example
+The name of the table can be changed by customizing =org-tt-table-name=, for example:
 
 #+BEGIN_SRC emacs-lisp
 (setq org-tt-table-name "my-table-name")
 #+END_SRC
 
-This is the name that the other functions in the package refer to when trying to find the table, so if you want to change the varianle it's recommendable to do it before calling =org-tt-table-name=  to ensure consistency.
+The name set with =org-tt-table-name= is used when the functions try to find the table, so if you want to change the variable it's recommended to do it before calling =org-tt-table-name= to ensure consistency.
 
 ** Updating the table
-=org-tt-write= updates this table with your progress. This should at least be done when you're done writing for the day.
+All that the table needs to record the current word count with a time-stamp and a calculation of daily productivity is contained in the formula, so the table could be manually updated by inserting a new row and updating it with =C-c *=.
 
- Imagine that =org-tt-write= has been called from last line in this minimal set-up:
+=org-tt-write= makes is easier to update the table. It will jump to the table from anywhere in the buffer, create a new entry and take you to the comment field. =C-c &= will take you back to your writing again.
 
-#+BEGIN_SRC org
+If an entry from the current day already exist, =org-tt-write= will update this entry instead of creating a new one. 
+In that way, =org-tracktable.el= aims to keep only one entry per day. For testing purposes, you can manually change the time-stamp for the last entry to get familiar with the behavior.
 
-* Stats                                           :noexport:
-#+NAME: tracktable
-|---+------------------+-----+-----+---------+---------|
-| ! | date             | beg | end | written | comment |
-|---+------------------+-----+-----+---------+---------|
-|   | initial count    |   0 |   0 |       0 |         |
-|   | [yyyy-mm-dd Day] |   0 |   4 |       4 | ▮       |
-|---+------------------+-----+-----+---------+---------|
-#+TBLFM: @2$2=initial count::$2='(org-tt-stamp)::@2$3=0::$3=(@-1$4)::$4='(org-tt-current-count)::$5=$4-$3
-
-* The fairy tale of my life
-Once upon a time
-#+END_SRC
-
-Notice that a line has been added with today timestamp, the value in the =written= column has been updated, and the point has moved to the =comment= column. From here you can enter a comment if desired and go back where you came from with =C-c &=.
-
-If you decide to write a bit more for the day and then call =org-tt-write= when you're done the last line will be updated unless it's past 5am on a later date than the one in the time stamp. Only if by calling =org-tt-day-delay= on a later time than this will a new line be inserted.
-
-The number of hours after midnight that's should be considered part of the previuos day can be altered by changing the variable =org-tt-day-delay=.
+Note that a new day is considered to start at 5am. This can be altered by changing the variable =org-tt-day-delay=.
 
 ** Getting status
 =org-tt-status= will give you a message with:
 
-- Number of words in the Org mode buffer or region, if it's active.
-- The number of words written today (this is only shown if the table exist). The value is calculated by subtracting the last total word count from the table, excluding the entry from current day, from the total word count. If you remembered to call =org-tt-write= when you were done writing the precedent day, the count for the current day should be correct.
-- How many percent of your daily goal is written so far. The daily goal can be altered by changing the variable =org-tt-daily-goal=. Set to 0 to disable 'org-tt-status' from displaying daily goal.
+- Number of words in the org buffer or region, if it's active.
+- The number of words written today (this is only shown if the table exist). This value is the difference between the last entry in the table and the total word count. Note that if the last entry is from the current day, =org-tt-status= will skip it and look at the second last. If  =org-tt-write= was called when you were done writing the preceding day, the count for the current day should be correct.
+- The percentage of your daily writing goal achieved so far. The daily writing goal is set to 300 by default. It can be altered by changing the variable =org-tt-daily-goal=. Set to 0 to disable 'org-tt-status' from displaying daily goal.
