@@ -3,6 +3,7 @@
 ;; Author: tty-tourist <andreasrasholm@protonmail.com>
 ;; URL: https://github.com/tty-tourist/org-tracktable
 ;; Created: 2015-11-03
+;; Keywords: org, writing
 ;; Package-Requieres: ((emacs "24"))
 ;; Version 0.1
 
@@ -25,25 +26,23 @@
 
 ;; The package provides these three interactive functions:
 
-;; - 'org-tt-insert-table' insert a table to keep track of word count
+;; - org-tt-insert-table: inserts a table to keep track of word count
 ;;   in an org-mode buffer.
-;; - 'org-tt-write' adds an entry with the current word count to the
+;; - org-tt-write: adds an entry with the current word count to the
 ;;   table. You only need to do this when you're done writing for the
 ;;   day. If an entry for the current day already exists, this entry
 ;;   will be updated.
-;; - 'org-tt-status' messages the total word count in the buffer, or
-;;   region if active. If the tracktable exists, the count of words
-;;   written the current day is also shown together with percentage
-;;   of your daily writing goal.
+;; - org-tt-status: messages the total word count in the buffer, or
+;;   region if active. If the table inserted by org-tt-insert-table
+;;   exists, the count of words written the current day is shown
+;;   together with percentage of your daily writing goal.
 
 ;; These three variables can be customized:
 
-;; - 'org-tt-day-delay':
-;;   hours after midnight for new day to start.
-;; - 'org-tt-daily-goal':
-;;   The number of words you set out to write for the day.
-;; - 'org-tt-table-name':
-;;   The name given to the table inserted by 'org-tt-insert.
+;; - org-tt-day-delay: hours after midnight for new day to start.
+;; - org-tt-daily-goal: The number of words you pan to write each day.
+;; - org-tt-table-name: The name given to the table inserted by
+;;   org-tt-insert-table.
 
 
 ;; For additional info on use and customization, see the README in the
@@ -61,7 +60,7 @@
                    (require 'cl))
 
 ;;;###autoload
-(load "org-table.el") ; Functions from this package is are called.
+(load "org-table.el") ; Some functions from this package are called.
 
 (defcustom org-tt-day-delay 5
   "Hours after midnight that are considered part of the previuos day. 
@@ -69,7 +68,7 @@ Default is 5 which means that a new day is considered to start at 5am."
   :type 'integer)
 
 (defcustom org-tt-daily-goal 300
-  "The number of words you set out to write for the day.
+  "The number of words plan to write each day.
 Your progress in % will be shown with 'org-tt-status'. Set to 0 to 
 disable 'org-tt-status' from displaying daily goal."
   :type 'integer)
@@ -77,19 +76,19 @@ disable 'org-tt-status' from displaying daily goal."
 (defcustom org-tt-table-name "tracktable"
   "The name given to the table inserted by 'org-tt-insert'.
 This is the name that the other functions in the package tries refer to. 
-If you want to change this varianle it's recommendable to do it before 
-inserting the table to ensure consistency. The default name is 
+If you want to change this variable, it's recommended to do it before 
+inserting the table, to ensure consistency. The default name is 
 'tracktable'."
   :type 'string)
 
 (defun tracktable-exists-p ()
-  "Check if the 'tracktable' exists in buffer."
+  "Checks if the 'tracktable' exists in buffer."
   (save-excursion
     (goto-char (point-min))
     (re-search-forward (concat "#\\+NAME:\s*" org-tt-table-name) nil t)))
 
 (defun last-entry-today-p ()
-  "Check if the last entry in the tracktable was made today."
+  "Checks if the last entry in the tracktable was made today."
   (let ((last-entry (substring-no-properties
                      (org-table-get-remote-range org-tt-table-name "@>$2") 1 11))
         (today (format-time-string "%F"
@@ -115,12 +114,13 @@ current word count."
       (- current-wc (string-to-number last-entry)))))
 
 (defun org-tt-current-count ()
-  "Reports words in buffer. This function is used in the table formula."
+  "Reports total number of words in the buffer.
+This function is used in the table formula."
    (let ((wc (org-tt-word-count (point-min) (point-max))))
      (format "%d" wc)))
 
 (defun org-tt-stamp ()
-    "Makes a timestamp for today minus 4 hours.
+    "Makes a timestamp for today delayed by org-tt-day-delay.
 This function is used in the table formula."
     (org-insert-time-stamp
      (time-subtract
@@ -128,17 +128,17 @@ This function is used in the table formula."
 
 ;;;###autoload
 (defun org-tt-insert-table ()
-  "Inserts the tracktable."
+  "Inserts the a table with the name defined by org-tt-table-name."
   (interactive)
   (if (not (tracktable-exists-p))
       (progn
         (unless (current-line-empty-p) (newline))
         (insert (format "#+NAME: %s
-|---+------+-----+-----+---------+---------|
-| ! | date | beg | end | written | comment |
-|---+------+-----+-----+---------+---------|
-|   |      |     |     |         |         |
-|---+------+-----+-----+---------+---------|
+|---+------+-----+-----+-------+---------|
+| ! | date | beg | end | total | comment |
+|---+------+-----+-----+-------+---------|
+|   |      |     |     |       |         |
+|---+------+-----+-----+-------+---------|
 #+TBLFM: @2$2=initial count::$2='(org-tt-stamp)::@2$3=0::$3=(@-1$4)::$4='(org-tt-current-count)::$5=$4-$3"
                         org-tt-table-name))
         (previous-line)
@@ -148,8 +148,9 @@ This function is used in the table formula."
 
 ;;;###autoload
 (defun org-tt-status (beg end)
-  "Report the number of words in the Org mode buffer or region if active.
-If the table 'tracktable' exists, show words written today."
+  "Reports the number of words in the org-buffer or region if active.
+If a table is inserted with org-tt-table-insert, shows words written today.
+If org-tt-daily-goal is set to more than 0, show % of daily goal."
   (interactive
    (if (use-region-p)
        (list (region-beginning) (region-end))
@@ -160,10 +161,10 @@ If the table 'tracktable' exists, show words written today."
                    (when (tracktable-exists-p)
                        (format "%d words written today. " (org-tt-written-today)))
                    (when (and (tracktable-exists-p) (< 0 org-tt-daily-goal))
-                       (format "%d%s of daily goal"
+                       (format "%d%s of daily goal."
                                (round (* 100 (/ (org-tt-written-today)
                                                 (float org-tt-daily-goal))))
-                               "%" )))))
+                               "%")))))
 
 ;;;###autoload
 (defun org-tt-write ()
@@ -186,15 +187,15 @@ when you're done writing for the day."
             (message "Last entry updated. Comments go here. Go back with C-c &."))
            (progn (org-table-next-row)
            (org-table-recalculate)
-           (message "New entry recorded. Comments go here. Go back with C-c &."))))
+           (message "New entry added. Comments go here. Go back with C-c &."))))
     (message "Tabel '%s' doesn't exist." org-tt-table-name)))
 
 
 ;;;###autoload
 (defun org-tt-word-count (beg end)
-  "Report the number of words in the selected region.
-Ignores: heading lines, comments and folded drawers,
-and any heading with the tag 'nowc' or 'noexport.'
+  "Reports the number of words in buffer or region if active.
+Ignores: heading lines, comments and folded drawers, and any 
+heading with the tag 'nowc' or 'noexport.'
 LaTeX macros are counted as 1 word."
   (let ((wc 0)
         (latex-macro-regexp "\\\\[A-Za-z]+\\(\\[[^]]*\\]\\|\\){\\([^}]*\\)}"))
