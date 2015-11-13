@@ -180,7 +180,7 @@ when you're done writing for the day."
         (re-search-forward tabel nil t)
         (show-subtree)
         (goto-char (org-table-end))
-        (previous-line 2)
+        (previous-logical-line 2)
         (org-table-goto-column 6)
         (if (org-tt-last-entry-today-p)
             (progn (org-table-recalculate)
