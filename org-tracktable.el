@@ -49,7 +49,7 @@
 ;; github repo.
 
 ;; Implementation based on:
-;; - Simon Guest's org.el:
+;; - Simon Guest's org-wc.el:
 ;;   https://github.com/dato/org-wc/blob/master/org-wc.el
 ;; - Lit Wakefield's chronicler.el:
 ;;   https://github.com/noctuid/chronicler
@@ -69,12 +69,12 @@ Default is 5 which means that a new day is considered to start at 5am."
 
 (defcustom org-tt-daily-goal 300
   "The number of words plan to write each day.
-Your progress in % will be shown with 'org-tt-status'. Set to 0 to 
+Your progress in % will be shown with `org-tt-status'. Set to 0 to 
 disable 'org-tt-status' from displaying daily goal."
   :type 'integer)
 
 (defcustom org-tt-table-name "tracktable"
-  "The name given to the table inserted by 'org-tt-insert'.
+  "The name given to the table inserted by `org-tt-table-insert'.
 This is the name that the other functions in the package tries refer to. 
 If you want to change this variable, it's recommended to do it before 
 inserting the table, to ensure consistency. The default name is 
@@ -120,7 +120,7 @@ This function is used in the table formula."
      (format "%d" wc)))
 
 (defun org-tt-stamp ()
-    "Makes a timestamp for today delayed by org-tt-day-delay.
+    "Makes a timestamp for today delayed by `org-tt-day-delay'.
 This function is used in the table formula."
     (org-insert-time-stamp
      (time-subtract
@@ -128,7 +128,7 @@ This function is used in the table formula."
 
 ;;;###autoload
 (defun org-tt-insert-table ()
-  "Inserts the a table with the name defined by org-tt-table-name."
+  "Inserts the a table with the name defined by `org-tt-table-name'."
   (interactive)
   (if (not (tracktable-exists-p))
       (progn
@@ -149,8 +149,8 @@ This function is used in the table formula."
 ;;;###autoload
 (defun org-tt-status (beg end)
   "Reports the number of words in the org-buffer or region if active.
-If a table is inserted with org-tt-table-insert, shows words written today.
-If org-tt-daily-goal is set to more than 0, show % of daily goal."
+If a table is inserted with `org-tt-table-insert', shows words written today.
+If `org-tt-daily-goal' is set to more than 0, show % of daily goal."
   (interactive
    (if (use-region-p)
        (list (region-beginning) (region-end))
