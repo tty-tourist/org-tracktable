@@ -4,7 +4,7 @@
 ;; URL: https://github.com/tty-tourist/org-tracktable
 ;; Created: 2015-11-03
 ;; Keywords: org, writing
-;; Package-Requieres: ((emacs "24"))
+;; Package-Requires: ((emacs "24"))
 ;; Version 0.1
 
 ;; This file is not part of GNU Emacs.
@@ -81,13 +81,13 @@ inserting the table, to ensure consistency. The default name is
 'tracktable'."
   :type 'string)
 
-(defun tracktable-exists-p ()
+(defun org-tt-tracktable-exists-p ()
   "Checks if the 'tracktable' exists in buffer."
   (save-excursion
     (goto-char (point-min))
     (re-search-forward (concat "#\\+NAME:\s*" org-tt-table-name) nil t)))
 
-(defun last-entry-today-p ()
+(defun org-tt-last-entry-today-p ()
   "Checks if the last entry in the tracktable was made today."
   (let ((last-entry (substring-no-properties
                      (org-table-get-remote-range org-tt-table-name "@>$2") 1 11))
@@ -95,7 +95,7 @@ inserting the table, to ensure consistency. The default name is
                      (time-subtract (current-time) (seconds-to-time (* 60 60 org-tt-day-delay))))))
     (string= last-entry today)))
 
-(defun current-line-empty-p ()
+(defun org-tt-current-line-empty-p ()
   "Check if point is at an empty line before inserting the table."
   (save-excursion
     (beginning-of-line)
@@ -109,7 +109,7 @@ current word count."
   (let ((current-wc (org-tt-word-count (point-min) (point-max)))
         (last-entry (org-table-get-remote-range org-tt-table-name "@>$4" ))
         (second-last-entry (org-table-get-remote-range org-tt-table-name "@>>$4" )))
-    (if (last-entry-today-p)
+    (if (org-tt-last-entry-today-p)
         (- current-wc (string-to-number second-last-entry))
       (- current-wc (string-to-number last-entry)))))
 
@@ -130,9 +130,9 @@ This function is used in the table formula."
 (defun org-tt-insert-table ()
   "Inserts the a table with the name defined by `org-tt-table-name'."
   (interactive)
-  (if (not (tracktable-exists-p))
+  (if (not (org-tt-tracktable-exists-p))
       (progn
-        (unless (current-line-empty-p) (newline))
+        (unless (org-tt-current-line-empty-p) (newline))
         (insert (format "#+NAME: %s
 |---+------+-----+-----+-------+---------|
 | ! | date | beg | end | total | comment |
@@ -158,9 +158,9 @@ If `org-tt-daily-goal' is set to more than 0, show % of daily goal."
   (message "%s" (concat (format "%d words in %s. "
                    (org-tt-word-count beg end)
                    (if (use-region-p) "region" "buffer"))
-                   (when (tracktable-exists-p)
+                   (when (org-tt-tracktable-exists-p)
                        (format "%d words written today. " (org-tt-written-today)))
-                   (when (and (tracktable-exists-p) (< 0 org-tt-daily-goal))
+                   (when (and (org-tt-tracktable-exists-p) (< 0 org-tt-daily-goal))
                        (format "%d%s of daily goal."
                                (round (* 100 (/ (org-tt-written-today)
                                                 (float org-tt-daily-goal))))
@@ -173,7 +173,7 @@ If the last entry is from today, this entry will be updated.
 Otherwise a new entry will be made. It is only necessary to call this function
 when you're done writing for the day."
   (interactive)
-  (if (tracktable-exists-p)
+  (if (org-tt-tracktable-exists-p)
       (let ((tabel (concat "#\\+NAME:\s*" org-tt-table-name)))
         (org-mark-ring-push)
         (goto-char (point-min))
@@ -182,7 +182,7 @@ when you're done writing for the day."
         (goto-char (org-table-end))
         (previous-line 2)
         (org-table-goto-column 6)
-        (if (last-entry-today-p)
+        (if (org-tt-last-entry-today-p)
             (progn (org-table-recalculate)
             (message "Last entry updated. Comments go here. Go back with C-c &."))
            (progn (org-table-next-row)
