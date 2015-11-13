@@ -141,7 +141,7 @@ This function is used in the table formula."
 |---+------+-----+-----+-------+---------|
 #+TBLFM: @2$2=initial count::$2='(org-tt-stamp)::@2$3=0::$3=(@-1$4)::$4='(org-tt-current-count)::$5=$4-$3"
                         org-tt-table-name))
-        (previous-line)
+        (previous-logical-line)
         (org-table-previous-field)
         (org-table-recalculate))
     (message "Tabel '%s' already exist." org-tt-table-name)))
