@@ -5,7 +5,7 @@
 ;; Created: 2015-11-03
 ;; Keywords: org, writing
 ;; Package-Requires: ((emacs "24"))
-;; Version 0.1
+;; Version: 0.1
 
 ;; This file is not part of GNU Emacs.
 
@@ -48,7 +48,7 @@
 ;; For additional info on use and customization, see the README in the
 ;; github repo.
 
-;; Implementation based on:
+;; Implementation is based on:
 ;; - Simon Guest's org-wc.el:
 ;;   https://github.com/dato/org-wc/blob/master/org-wc.el
 ;; - Lit Wakefield's chronicler.el:
@@ -63,32 +63,32 @@
 (load "org-table.el") ; Some functions from this package are called.
 
 (defcustom org-tt-day-delay 5
-  "Hours after midnight that are considered part of the previuos day. 
+  "Hours after midnight that are considered part of the previuos day.
 Default is 5 which means that a new day is considered to start at 5am."
-  :type 'integer)
+  :type 'integer :group 'convenience)
 
 (defcustom org-tt-daily-goal 300
   "The number of words plan to write each day.
-Your progress in % will be shown with `org-tt-status'. Set to 0 to 
+Your progress in % will be shown with `org-tt-status'.  Set to 0 to
 disable 'org-tt-status' from displaying daily goal."
-  :type 'integer)
+  :type 'integer :group 'convenience)
 
 (defcustom org-tt-table-name "tracktable"
   "The name given to the table inserted by `org-tt-table-insert'.
-This is the name that the other functions in the package tries refer to. 
-If you want to change this variable, it's recommended to do it before 
-inserting the table, to ensure consistency. The default name is 
+This is the name that the other functions in the package tries refer to.
+If you want to change this variable, it's recommended to do it before
+inserting the table, to ensure consistency.  The default name is
 'tracktable'."
-  :type 'string)
+  :type 'string :group 'convenience)
 
 (defun org-tt-tracktable-exists-p ()
-  "Checks if the 'tracktable' exists in buffer."
+  "Check if the 'tracktable' exists in buffer."
   (save-excursion
     (goto-char (point-min))
     (re-search-forward (concat "#\\+NAME:\s*" org-tt-table-name) nil t)))
 
 (defun org-tt-last-entry-today-p ()
-  "Checks if the last entry in the tracktable was made today."
+  "Check if the last entry in the tracktable was made today."
   (let ((last-entry (substring-no-properties
                      (org-table-get-remote-range org-tt-table-name "@>$2") 1 11))
         (today (format-time-string "%F"
@@ -104,7 +104,7 @@ inserting the table, to ensure consistency. The default name is
 ;;;###autoload
 (defun org-tt-written-today ()
   "Calculate words written today.
-It does this by substracting last entry that isn't from today from 
+It does this by substracting last entry that isn't from today from
 current word count."
   (let ((current-wc (org-tt-word-count (point-min) (point-max)))
         (last-entry (org-table-get-remote-range org-tt-table-name "@>$4" ))
@@ -120,7 +120,7 @@ This function is used in the table formula."
      (format "%d" wc)))
 
 (defun org-tt-stamp ()
-    "Makes a timestamp for today delayed by `org-tt-day-delay'.
+    "Make a timestamp for today delayed by `org-tt-day-delay'.
 This function is used in the table formula."
     (org-insert-time-stamp
      (time-subtract
@@ -128,7 +128,7 @@ This function is used in the table formula."
 
 ;;;###autoload
 (defun org-tt-insert-table ()
-  "Inserts the a table with the name defined by `org-tt-table-name'."
+  "Insert the a table with the name defined by `org-tt-table-name'."
   (interactive)
   (if (not (org-tt-tracktable-exists-p))
       (progn
@@ -148,7 +148,7 @@ This function is used in the table formula."
 
 ;;;###autoload
 (defun org-tt-status (beg end)
-  "Reports the number of words in the org-buffer or region if active.
+  "Report the number of words between positions BEG and END.
 If a table is inserted with `org-tt-table-insert', shows words written today.
 If `org-tt-daily-goal' is set to more than 0, show % of daily goal."
   (interactive
@@ -170,7 +170,7 @@ If `org-tt-daily-goal' is set to more than 0, show % of daily goal."
 (defun org-tt-write ()
   "Write progress to the tracktable.
 If the last entry is from today, this entry will be updated.
-Otherwise a new entry will be made. It is only necessary to call this function
+Otherwise a new entry will be made.  It is only necessary to call this function
 when you're done writing for the day."
   (interactive)
   (if (org-tt-tracktable-exists-p)
@@ -193,8 +193,8 @@ when you're done writing for the day."
 
 ;;;###autoload
 (defun org-tt-word-count (beg end)
-  "Reports the number of words in buffer or region if active.
-Ignores: heading lines, comments and folded drawers, and any 
+  "Report the number of words between positions BEG and END.
+Ignores: heading lines, comments and folded drawers, and any
 heading with the tag 'nowc' or 'noexport.'
 LaTeX macros are counted as 1 word."
   (let ((wc 0)
