@@ -1,4 +1,4 @@
-* About
+* Org-tracktable
 =org-tracktable= is an emacs/org-mode package for tracking your writing progress in an org-table.
 
 It provides functions for inserting a table for tracking progress, updating that table, and getting status messages with your progress.
@@ -22,11 +22,11 @@ Add the location to emacs' path and load it:
 ** Functions
 When =org-tracktable.el= is loaded, these three functions become available:
 
-- =org-tt-insert-table=: inserts a table to keep track of word count in an org-mode buffer.
+- =org-tt-insert-table=: insert a table to keep track of word count in an org-mode buffer.
 
-- =org-tt-write=: adds an entry with the current word count to the table. You only need to do this when you're done writing for the day. If an entry for the current day already exists, this entry will be updated.
+- =org-tt-write=: add an entry with the current word count to the table. You only need to do this when you're done writing for the day. If an entry for the current day already exists, this entry will be updated.
 
-- =org-tt-status=: messages the total word count in the buffer, or region if active. If the table was inserted by =org-tt-insert-table=, the count of words written the current day is also shown together with percentage of your daily writing goal.
+- =org-tt-status=: message the total word count in the buffer, or region if active. If the table was inserted by =org-tt-insert-table=, the count of words written the current day is also shown together with percentage of your daily writing goal.
 
 ** Keys
 It can be convenient to map =org-tt-write= and  =org-tt-status= to whatever keys you can spare, for example:
@@ -59,7 +59,7 @@ The name of the table can be changed by customizing =org-tt-table-name=, for exa
 (setq org-tt-table-name "my-table-name")
 #+END_SRC
 
-The name set with =org-tt-table-name= is used when the functions try to find the table, so if you want to change the variable it's recommended to do it before calling =org-tt-table-name= to ensure consistency.
+The name set with =org-tt-table-name= is used when the other functions try to find the table, so if you want to change the variable it's recommended to do it before calling =org-tt-table-name=, to ensure consistency.
 
 ** Updating the table
 All that the table needs to record the current word count with a time-stamp and a calculation of daily productivity is contained in the formula, so the table could be manually updated by inserting a new row and updating it with =C-c *=.
@@ -75,4 +75,4 @@ Note that a new day is considered to start at 5am. This can be altered by changi
 
 - Number of words in the org buffer or region, if it's active.
 - The number of words written today (this is only shown if the table exist). This value is the difference between the last entry in the table and the total word count. Note that if the last entry is from the current day, =org-tt-status= will skip it and look at the second last. If  =org-tt-write= was called when you were done writing the preceding day, the count for the current day should be correct.
-- The percentage of your daily writing goal achieved so far. The daily writing goal is set to 300 words by default. It can be altered by changing the variable =org-tt-daily-goal=. Set this variable to 0 to disable 'org-tt-status' from displaying daily goal.
+- The percentage of your daily writing goal achieved so far. The daily writing goal is set to 300 words by default. It can be altered by changing the variable =org-tt-daily-goal=. Set this variable to 0 to disable =org-tt-status= from displaying daily goal.
