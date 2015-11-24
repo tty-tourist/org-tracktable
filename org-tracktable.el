@@ -56,11 +56,9 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'org)
-                   (require 'cl))
-
-;;;###autoload
-(load "org-table.el") ; Some functions from this package are called.
+(require 'org)
+(require 'cl-lib)
+(require 'org-table)
 
 (defcustom org-tt-day-delay 5
   "Hours after midnight that are considered part of the previuos day.
