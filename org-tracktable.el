@@ -85,6 +85,7 @@ inserting the table, to ensure consistency.  The default name is
     (goto-char (point-min))
     (re-search-forward (concat "#\\+NAME:\s*" org-tt-table-name) nil t)))
 
+;;;###autoload
 (defun org-tt-last-entry-today-p ()
   "Check if the last entry in the tracktable was made today."
   (let ((last-entry (substring-no-properties
