@@ -4,7 +4,7 @@
 ;; URL: https://github.com/tty-tourist/org-tracktable
 ;; Created: 2015-11-03
 ;; Keywords: org, writing
-;; Package-Requires: ((emacs "24"))
+;; Package-Requires: ((emacs "24")(cl-lib "0.5"))
 ;; Version: 0.1
 
 ;; This file is not part of GNU Emacs.
@@ -85,7 +85,6 @@ inserting the table, to ensure consistency.  The default name is
     (goto-char (point-min))
     (re-search-forward (concat "#\\+NAME:\s*" org-tt-table-name) nil t)))
 
-;;;###autoload
 (defun org-tt-last-entry-today-p ()
   "Check if the last entry in the tracktable was made today."
   (let ((last-entry (substring-no-properties
@@ -100,7 +99,6 @@ inserting the table, to ensure consistency.  The default name is
     (beginning-of-line)
     (looking-at "[[:space:]]*$")))
 
-;;;###autoload
 (defun org-tt-written-today ()
   "Calculate words written today.
 It does this by substracting last entry that isn't from today from
@@ -190,7 +188,6 @@ when you're done writing for the day."
     (message "Tabel '%s' doesn't exist." org-tt-table-name)))
 
 
-;;;###autoload
 (defun org-tt-word-count (beg end)
   "Report the number of words between positions BEG and END.
 Ignores: heading lines, comments and folded drawers, and any
