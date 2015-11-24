@@ -4,7 +4,7 @@
 ;; URL: https://github.com/tty-tourist/org-tracktable
 ;; Created: 2015-11-03
 ;; Keywords: org, writing
-;; Package-Requires: ((emacs "24"))
+;; Package-Requires: ((emacs "24") (cl-lib "0.5"))
 ;; Version: 0.1
 
 ;; This file is not part of GNU Emacs.
@@ -56,11 +56,9 @@
 
 ;;; Code:
 
-(eval-when-compile (require 'org)
-                   (require 'cl))
-
-;;;###autoload
-(load "org-table.el") ; Some functions from this package are called.
+(require 'org)
+(require 'org-table)
+(require 'cl-lib)
 
 (defcustom org-tt-day-delay 5
   "Hours after midnight that are considered part of the previuos day.
@@ -101,7 +99,6 @@ inserting the table, to ensure consistency.  The default name is
     (beginning-of-line)
     (looking-at "[[:space:]]*$")))
 
-;;;###autoload
 (defun org-tt-written-today ()
   "Calculate words written today.
 It does this by substracting last entry that isn't from today from
@@ -191,7 +188,6 @@ when you're done writing for the day."
     (message "Tabel '%s' doesn't exist." org-tt-table-name)))
 
 
-;;;###autoload
 (defun org-tt-word-count (beg end)
   "Report the number of words between positions BEG and END.
 Ignores: heading lines, comments and folded drawers, and any
@@ -225,7 +221,7 @@ LaTeX macros are counted as 1 word."
          (t
           (progn
             (and (re-search-forward "\\w+\\W*" end 'skip)
-                 (incf wc)))))))
+                 (cl-incf wc)))))))
     wc))
 
 (provide 'org-tracktable)
