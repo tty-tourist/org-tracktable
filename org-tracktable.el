@@ -224,7 +224,7 @@ LaTeX macros are counted as 1 word."
          (t
           (progn
             (and (re-search-forward "\\w+\\W*" end 'skip)
-                 (incf wc)))))))
+                 (cl-incf wc)))))))
     wc))
 
 (provide 'org-tracktable)
