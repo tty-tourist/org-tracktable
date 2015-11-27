@@ -1,4 +1,7 @@
 * Org-tracktable
+
+[[http://stable.melpa.org:1337/#/org-tracktable][file:http://stable.melpa.org:1337/packages/org-tracktable-badge.svg]]
+
 =org-tracktable= is an emacs/org-mode package for tracking your writing progress in an org-table.
 
 It provides functions for inserting a table for tracking progress, updating that table, and getting status messages with your progress.
