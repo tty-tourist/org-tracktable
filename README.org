@@ -22,22 +22,22 @@ Add the location to emacs' path and load it:
 ** Functions
 When =org-tracktable.el= is loaded, these three functions become available:
 
-- =org-tt-insert-table=: insert a table to keep track of word count in an org-mode buffer.
+- =org-tracktable-insert-table=: insert a table to keep track of word count in an org-mode buffer.
 
-- =org-tt-write=: add an entry with the current word count to the table. You only need to do this when you're done writing for the day. If an entry for the current day already exists, this entry will be updated.
+- =org-tracktable-write=: add an entry with the current word count to the table. You only need to do this when you're done writing for the day. If an entry for the current day already exists, this entry will be updated.
 
-- =org-tt-status=: message the total word count in the buffer, or region if active. If the table was inserted by =org-tt-insert-table=, the count of words written the current day is also shown together with percentage of your daily writing goal.
+- =org-tracktable-status=: message the total word count in the buffer, or region if active. If the table was inserted by =org-tracktable-insert-table=, the count of words written the current day is also shown together with percentage of your daily writing goal.
 
 ** Keys
-It can be convenient to map =org-tt-write= and  =org-tt-status= to whatever keys you can spare, for example:
+It can be convenient to map =org-tracktable-write= and  =org-tracktable-status= to whatever keys you can spare, for example:
 
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<f11>") 'org-tt-status)
-(global-set-key (kbd "<f12>") 'org-tt-write)
+(global-set-key (kbd "<f11>") 'org-tracktable-status)
+(global-set-key (kbd "<f12>") 'org-tracktable-write)
 #+END_SRC
 
 ** The table
-This is the table inserted by =org-tt-insert-table=:
+This is the table inserted by =org-tracktable-insert-table=:
 
 #+BEGIN_SRC org
 #+NAME: tracktable
@@ -46,33 +46,33 @@ This is the table inserted by =org-tt-insert-table=:
 |---+---------------+-----+-----+-------+---------|
 |   | initial count |   0 |   0 |     0 |         |
 |---+---------------+-----+-----+-------+---------|
-#+TBLFM: @2$2=initial count::$2='(org-tt-stamp)::@2$3=0::$3=(@-1$4)::$4='(org-tt-current-count)::$5=$4-$3
+#+TBLFM: @2$2=initial count::$2='(org-tracktable-stamp)::@2$3=0::$3=(@-1$4)::$4='(org-tracktable-current-count)::$5=$4-$3
 #+END_SRC
 
 Starting off, it will only have one line containing a count of the words already in the buffer. Everything is counted except: comments, (folded) drawers, heading lines, and any content of headings with the tags =nowc= or =noexport=.
 
 For that reason it's a good idea to put a =nowc= or =noexport= tag on any heading not containing whatever you consider productive writing, such as research and todo lists – and the heading containing the table itself.
 
-The name of the table can be changed by customizing =org-tt-table-name=, for example:
+The name of the table can be changed by customizing =org-tracktable-table-name=, for example:
 
 #+BEGIN_SRC emacs-lisp
-(setq org-tt-table-name "my-table-name")
+(setq org-tracktable-table-name "my-table-name")
 #+END_SRC
 
-The name set with =org-tt-table-name= is used when the other functions try to find the table, so if you want to change the variable it's recommended to do it before calling =org-tt-table-name=, to ensure consistency.
+The name set with =org-tracktable-table-name= is used when the other functions try to find the table, so if you want to change the variable it's recommended to do it before calling =org-tracktable-table-name=, to ensure consistency.
 
 ** Updating the table
 All that the table needs to record the current word count with a time-stamp and a calculation of daily productivity is contained in the formula, so the table could be manually updated by inserting a new row and updating it with =C-c *=.
 
-=org-tt-write= makes is easier to update the table. It will jump to the table from anywhere in the buffer, create a new entry and take you to the comment field. =C-c &= will take you back to your writing again.
+=org-tracktable-write= makes is easier to update the table. It will jump to the table from anywhere in the buffer, create a new entry and take you to the comment field. =C-c &= will take you back to your writing again.
 
-If an entry from the current day already exist, =org-tt-write= will update this entry instead of creating a new one. In that way, =org-tracktable.el= is designed to only keep one entry per day. For testing purposes, you can manually change the time-stamp for the last entry a to insest new entries and get familiar with the behavior.
+If an entry from the current day already exist, =org-tracktable-write= will update this entry instead of creating a new one. In that way, =org-tracktable.el= is designed to only keep one entry per day. For testing purposes, you can manually change the time-stamp for the last entry a to insest new entries and get familiar with the behavior.
 
-Note that a new day is considered to start at 5am. This can be altered by changing the variable =org-tt-day-delay=.
+Note that a new day is considered to start at 5am. This can be altered by changing the variable =org-tracktable-day-delay=.
 
 ** Getting status
-=org-tt-status= will give you a message with:
+=org-tracktable-status= will give you a message with:
 
 - Number of words in the org buffer or region, if it's active.
-- The number of words written today (this is only shown if the table exist). This value is the difference between the last entry in the table and the total word count. Note that if the last entry is from the current day, =org-tt-status= will skip it and look at the second last. If  =org-tt-write= was called when you were done writing the preceding day, the count for the current day should be correct.
-- The percentage of your daily writing goal achieved so far. The daily writing goal is set to 300 words by default. It can be altered by changing the variable =org-tt-daily-goal=. Set this variable to 0 to disable =org-tt-status= from displaying daily goal.
+- The number of words written today (this is only shown if the table exist). This value is the difference between the last entry in the table and the total word count. Note that if the last entry is from the current day, =org-tracktable-status= will skip it and look at the second last. If  =org-tracktable-write= was called when you were done writing the preceding day, the count for the current day should be correct.
+- The percentage of your daily writing goal achieved so far. The daily writing goal is set to 300 words by default. It can be altered by changing the variable =org-tracktable-daily-goal=. Set this variable to 0 to disable =org-tracktable-status= from displaying daily goal.
