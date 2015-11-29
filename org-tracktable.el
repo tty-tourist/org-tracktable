@@ -186,14 +186,11 @@ when you're done writing for the day."
            (message "New entry added. Comments go here. Go back with C-c &."))))
     (message "Tabel '%s' doesn't exist." org-tracktable-table-name)))
 
-
 (defun org-tracktable-word-count (beg end)
   "Report the number of words between positions BEG and END.
 Ignores: heading lines, comments and folded drawers, and any
-heading with the tag 'nowc' or 'noexport.'
-LaTeX macros are counted as 1 word."
-  (let ((wc 0)
-        (latex-macro-regexp "\\\\[A-Za-z]+\\(\\[[^]]*\\]\\|\\){\\([^}]*\\)}"))
+heading with the tag 'nowc' or 'noexport.'"
+  (let ((wc 0))
     (save-excursion
       (goto-char beg)
       (while (< (point) end)
@@ -211,12 +208,6 @@ LaTeX macros are counted as 1 word."
          ;; Ignore drawers.
          ((org-at-drawer-p)
           (forward-line))
-         ;; Count latex macros as 1 word, ignoring their arguments.
-         ((save-excursion
-            (backward-char)
-            (looking-at latex-macro-regexp))
-          (goto-char (match-end 0))
-          (setf wc (+ 2 wc)))
          (t
           (progn
             (and (re-search-forward "\\w+\\W*" end 'skip)
