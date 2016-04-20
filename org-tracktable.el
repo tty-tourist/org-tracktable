@@ -161,29 +161,23 @@ If `org-tracktable-daily-goal' is set to more than 0, show % of daily goal."
                                (round (* 100 (/ (org-tracktable-written-today)
                                                 (float org-tracktable-daily-goal)))))))))
 
-;;;###autoload
-(defun org-tracktable-status-buffer (beg end)
-  "Report the number of words between positions BEG and END.
-If a table is inserted with `org-tracktable-table-insert', shows words written today.
-If `org-tracktable-daily-goal' is set to more than 0, show % of daily goal."
-  (interactive
-   (list (point-min) (point-max)))
-  (message "%s" (format "%d words in buffer." (org-tracktable-word-count beg end))))
-
-(defun org-tracktable-status-buffer2 ()
-  "Reports total number of words in the buffer.
-This function is used in the table formula."
+(defun org-tracktable-status-buffer ()
+  "Reports number of words in the buffer."
   (interactive)
    (let ((wc (org-tracktable-word-count (point-min) (point-max))))
      (message (format "%d words in buffer." wc))))
 
 ;;;###autoload
 (defun org-tracktable-status-today ()
-  "Report the number of words between positions BEG and END.
-If a table is inserted with `org-tracktable-table-insert', shows words written today.
-If `org-tracktable-daily-goal' is set to more than 0, show % of daily goal."
+  "Reports number of words written today"
   (interactive)
   (message "%s" (format "%d words written today." (org-tracktable-written-today))))
+
+(defun org-tracktable-status-buffer-today ()
+  "Reports number of words in the buffer and words written today"
+  (interactive)
+   (let ((wc (org-tracktable-word-count (point-min) (point-max))))
+     (message (format "%d words in buffer. %d words written today." wc (org-tracktable-written-today)))))
 
 ;;;###autoload
 (defun org-tracktable-write ()
