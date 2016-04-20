@@ -157,30 +157,22 @@ If `org-tracktable-daily-goal' is set to more than 0, show % of daily goal."
                    (when (org-tracktable-tracktable-exists-p)
                        (format "%d words written today. " (org-tracktable-written-today)))
                    (when (and (org-tracktable-tracktable-exists-p) (< 0 org-tracktable-daily-goal))
-                       (format "%d%s of daily goal."
+                       (format "%d%% of daily goal."
                                (round (* 100 (/ (org-tracktable-written-today)
-                                                (float org-tracktable-daily-goal))))
-                               "%")))))
+                                                (float org-tracktable-daily-goal)))))))))
+
 ;;;###autoload
-(defun org-tracktable-status-buffer (beg end)
+(defun org-tracktable-status-quick (beg end)
   "Report the number of words between positions BEG and END.
 If a table is inserted with `org-tracktable-table-insert', shows words written today.
 If `org-tracktable-daily-goal' is set to more than 0, show % of daily goal."
-  (interactive
-   (if (use-region-p)
-       (list (region-beginning) (region-end))
-     (list (point-min) (point-max))))
-  (message "%s" (concat (format "%d words in %s. "
-                   (org-tracktable-word-count beg end)
-                   (if (use-region-p) "region" "buffer"))
-                   (when (org-tracktable-tracktable-exists-p)
-                       (format "%d words written today. " (org-tracktable-written-today)))
-                   (when (and (org-tracktable-tracktable-exists-p) (< 0 org-tracktable-daily-goal))
-                       (format "%d%s of daily goal."
+(interactive
+     (list (point-min) (point-max)))
+  (message "%s" (concat (format "%d words in buffer. " (org-tracktable-word-count beg end))
+                        (format "%d words written today. " (org-tracktable-written-today))
+                        (format "%d%% of daily goal."
                                (round (* 100 (/ (org-tracktable-written-today)
-                                                (float org-tracktable-daily-goal))))
-                               "%")))))
-
+                                                (float org-tracktable-daily-goal))))))))
 
 ;;;###autoload
 (defun org-tracktable-write ()
