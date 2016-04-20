@@ -160,7 +160,7 @@ If `org-tracktable-daily-goal' is set to more than 0, show % of daily goal."
                        (format "%d%% of daily goal."
                                (round (* 100 (/ (org-tracktable-written-today)
                                                 (float org-tracktable-daily-goal)))))))))
-
+;;;###autoload
 (defun org-tracktable-status-buffer ()
   "Reports number of words in the buffer."
   (interactive)
@@ -173,11 +173,14 @@ If `org-tracktable-daily-goal' is set to more than 0, show % of daily goal."
   (interactive)
   (message "%s" (format "%d words written today." (org-tracktable-written-today))))
 
-(defun org-tracktable-status-buffer-today ()
-  "Reports number of words in the buffer and words written today"
+;;;###autoload
+(defun org-tracktable-status-today-percent ()
+  "Reports number of words written today"
   (interactive)
-   (let ((wc (org-tracktable-word-count (point-min) (point-max))))
-     (message (format "%d words in buffer. %d words written today." wc (org-tracktable-written-today)))))
+  (message "%s" (format "%d words written today. %d%% of daily goal"
+                        (org-tracktable-written-today)
+                        (round (* 100 (/ (org-tracktable-written-today)
+                                                (float org-tracktable-daily-goal)))))))
 
 ;;;###autoload
 (defun org-tracktable-write ()
