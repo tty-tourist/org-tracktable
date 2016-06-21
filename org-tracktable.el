@@ -211,7 +211,9 @@ heading with the tag 'nowc' or 'noexport.'"
           (forward-line))
          ;; Ignore drawers.
          ((org-at-drawer-p)
-          (forward-line))
+	  (progn (goto-char (match-end 0))
+		 (re-search-forward org-property-end-re (point-max) t)
+		 (forward-line)))
          (t
           (progn
             (and (re-search-forward "\\w+\\W*" end 'skip)
