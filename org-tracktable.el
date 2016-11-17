@@ -78,7 +78,7 @@ inserting the table, to ensure consistency.  The default name is
 'tracktable'."
   :type 'string :group 'convenience)
 
-(defcustom org-tracktable-ignore-blocks nil
+(defcustom org-tracktable-ignore-blocks '("src" "drawer" "comment")
   "A list of strings containing names of blocks to ignore.
 See `org-in-block-p' for more detail."
   :type '(repeat string) :group 'convenience)
@@ -211,17 +211,9 @@ heading with the tag 'nowc' or 'noexport.'"
                     (member "noexport" tags))
                 (outline-next-heading)
               (forward-line))))
-         ;; Ignore comments.
-         ((org-at-comment-p)
-          (forward-line))
 	 ;; Ignore blocks defined by user.
 	 ((org-in-block-p org-tracktable-ignore-blocks)
 	  (forward-line))
-         ;; Ignore drawers.
-         ((org-at-drawer-p)
-	  (progn (goto-char (match-end 0))
-		 (re-search-forward org-property-end-re (point-max) t)
-		 (forward-line)))
          (t
           (progn
             (and (re-search-forward "\\w+\\W*" end 'skip)
